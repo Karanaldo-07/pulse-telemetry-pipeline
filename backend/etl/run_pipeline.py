@@ -80,10 +80,13 @@ def parse_batch_payload(
     return valid_rows, rejected_count
 
 
-def extract_and_validate_all(past_days: int = 7) -> Tuple[List[Tuple], int]:
-    """Batch-extracts air quality and weather telemetry for all 5 cities in 2 API calls."""
+def extract_and_validate_all(past_days: int = 7) -> Tuple[List[Tuple], int, List[str]]:
+    """Batch-extracts air quality and weather telemetry with graceful degradation on upstream 429s."""
     lats = ",".join(str(c["lat"]) for c in CITIES)
     lons = ",".join(str(c["lon"]) for c in CITIES)
+    all_rows: List[Tuple] = []
+    total_rejected = 0
+    warnings: List[str] = []
 
     # Call 1: Air Quality across all 5 cities
     aq_payload = fetch_with_retry(
@@ -98,26 +101,36 @@ def extract_and_validate_all(past_days: int = 7) -> Tuple[List[Tuple], int]:
         },
     )
     aq_rows, aq_rejected = parse_batch_payload(aq_payload, ("pm2_5", "pm10"))
+    all_rows.extend(aq_rows)
+    total_rejected += aq_rejected
 
-    time.sleep(0.5)
+    time.sleep(1.0)
 
-    # Call 2: Weather across all 5 cities
-    wx_payload = fetch_with_retry(
-        "https://api.open-meteo.com/v1/forecast",
-        {
-            "latitude": lats,
-            "longitude": lons,
-            "hourly": "temperature_2m,relative_humidity_2m",
-            "past_days": past_days,
-            "forecast_days": 0,
-            "timezone": "UTC",
-        },
-    )
-    wx_rows, wx_rejected = parse_batch_payload(
-        wx_payload, ("temperature_2m", "relative_humidity_2m")
-    )
+    # Call 2: Weather across all 5 cities (degrades gracefully if upstream IP is rate-limited)
+    try:
+        wx_payload = fetch_with_retry(
+            "https://api.open-meteo.com/v1/forecast",
+            {
+                "latitude": lats,
+                "longitude": lons,
+                "hourly": "temperature_2m,relative_humidity_2m",
+                "past_days": past_days,
+                "forecast_days": 0,
+                "timezone": "UTC",
+            },
+        )
+        wx_rows, wx_rejected = parse_batch_payload(
+            wx_payload, ("temperature_2m", "relative_humidity_2m")
+        )
+        all_rows.extend(wx_rows)
+        total_rejected += wx_rejected
+    except requests.HTTPError as exc:
+        if exc.response is not None and exc.response.status_code == 429:
+            warnings.append("Weather endpoint rate-limited (429) on shared cloud IP; ingested Air Quality batch.")
+        else:
+            raise exc
 
-    return aq_rows + wx_rows, aq_rejected + wx_rejected
+    return all_rows, total_rejected, warnings
 
 
 def detect_zscore_anomalies(cur: psycopg.Cursor) -> int:
@@ -186,7 +199,7 @@ def run_etl(trigger_source: str = "manual_cli", past_days: int = 7) -> Dict[str,
     total_rejected = 0
 
     try:
-        all_rows, total_rejected = extract_and_validate_all(past_days=past_days)
+        all_rows, total_rejected, warnings = extract_and_validate_all(past_days=past_days)
 
         with psycopg.connect(database_url, prepare_threshold=None) as conn:
             with conn.cursor() as cur:
@@ -205,15 +218,16 @@ def run_etl(trigger_source: str = "manual_cli", past_days: int = 7) -> Dict[str,
                 anomalies_found = detect_zscore_anomalies(cur)
                 duration_ms = int((time.perf_counter() - t0) * 1000)
 
-                status = "PARTIAL_WARNING" if total_rejected > 0 else "SUCCESS"
+                status = "PARTIAL_WARNING" if (total_rejected > 0 or warnings) else "SUCCESS"
+                warn_msg = "; ".join(warnings)[:500] if warnings else None
                 cur.execute(
                     """
                     INSERT INTO pipeline_runs (
-                        trigger_source, status, rows_ingested, anomalies_found, dq_rejected_rows, duration_ms
+                        trigger_source, status, rows_ingested, anomalies_found, dq_rejected_rows, duration_ms, error_message
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s);
+                    VALUES (%s, %s, %s, %s, %s, %s, %s);
                     """,
-                    (trigger_source, status, rows_ingested, anomalies_found, total_rejected, duration_ms),
+                    (trigger_source, status, rows_ingested, anomalies_found, total_rejected, duration_ms, warn_msg),
                 )
             conn.commit()
 
