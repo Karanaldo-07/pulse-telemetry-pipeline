@@ -29,16 +29,21 @@ VALID_RANGES: Dict[str, Tuple[float, float]] = {
 HEADERS = {"User-Agent": "PulseTelemetryPipeline/1.0 (DataEngineeringPortfolio)"}
 
 
-def fetch_with_retry(url: str, params: Dict[str, Any], retries: int = 4) -> Any:
+def fetch_with_retry(url: str, params: Dict[str, Any], retries: int = 3) -> Any:
     for attempt in range(retries):
         try:
             resp = requests.get(url, params=params, headers=HEADERS, timeout=25)
+            if resp.status_code == 429:
+                wait_sec = min(int(resp.headers.get("Retry-After", 3)), 5)
+                if attempt < retries - 1:
+                    time.sleep(wait_sec)
+                    continue
             resp.raise_for_status()
             return resp.json()
         except requests.RequestException as exc:
             if attempt == retries - 1:
                 raise exc
-            time.sleep(2 ** (attempt + 1))
+            time.sleep(2 ** attempt)
     return []
 
 
