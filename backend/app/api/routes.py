@@ -75,7 +75,7 @@ def get_metric_timeseries(
             FROM raw_metrics
             WHERE entity_id = %s
               AND metric_name = %s
-              AND recorded_at >= NOW() - (%s || ' hours')::INTERVAL;
+              AND recorded_at >= NOW() - MAKE_INTERVAL(hours => %s);
             """,
             (city, metric, hours),
         )
@@ -89,7 +89,7 @@ def get_metric_timeseries(
             FROM raw_metrics
             WHERE entity_id = %s
               AND metric_name = %s
-              AND recorded_at >= NOW() - (%s || ' hours')::INTERVAL
+              AND recorded_at >= NOW() - MAKE_INTERVAL(hours => %s)
             ORDER BY recorded_at ASC;
             """,
             (city, metric, hours),
