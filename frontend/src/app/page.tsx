@@ -3,15 +3,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Activity,
-  AlertTriangle,
+  AlertCircle,
   CheckCircle2,
   Database,
   Play,
   RefreshCw,
   Server,
   TrendingUp,
-  MapPin,
-  Clock,
 } from "lucide-react";
 import {
   Area,
@@ -37,12 +35,12 @@ import {
 
 const CITIES = ["Pune", "Mumbai", "Bengaluru", "Delhi", "Hyderabad"];
 
-// Muted, professional palette replacing vibrant neons
+// Apple-style vivid accents against dark mode
 const METRICS = [
-  { id: "pm2_5", label: "PM2.5", unit: "µg/m³", color: "#ffffff" }, // Pure White
-  { id: "pm10", label: "PM10", unit: "µg/m³", color: "#a1a1aa" }, // Zinc 400
-  { id: "temperature_2m", label: "Temperature", unit: "°C", color: "#fbbf24" }, // Muted Amber
-  { id: "relative_humidity_2m", label: "Humidity", unit: "%", color: "#60a5fa" }, // Muted Blue
+  { id: "pm2_5", label: "PM2.5", unit: "µg/m³", color: "#2997ff" }, // Apple Blue
+  { id: "pm10", label: "PM10", unit: "µg/m³", color: "#86868b" }, // Apple Gray
+  { id: "temperature_2m", label: "Temperature", unit: "°C", color: "#ff9f0a" }, // Apple Orange
+  { id: "relative_humidity_2m", label: "Humidity", unit: "%", color: "#32d74b" }, // Apple Green
 ];
 
 export default function TelemetryDashboardPage() {
@@ -95,8 +93,6 @@ export default function TelemetryDashboardPage() {
         text: `Pipeline succeeded in ${res.summary.duration_ms}ms — upserted ${res.summary.rows_ingested} rows.`,
       });
       await loadAllData();
-      
-      // Auto-hide success banner after 5s
       setTimeout(() => setBannerMsg(null), 5000);
     } catch (err: unknown) {
       setBannerMsg({
@@ -120,142 +116,236 @@ export default function TelemetryDashboardPage() {
   }));
 
   return (
-    // FULL SCREEN WRAPPER - Pure Black Foundation
-    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-black font-sans text-zinc-100 antialiased selection:bg-zinc-800">
+    <div className="min-h-screen bg-[#000000] font-sans text-[#f5f5f7] selection:bg-[#2997ff] selection:text-white pb-20">
       
-      {/* HEADER - Clean, structural, minimalist */}
-      <header className="relative z-20 flex h-14 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-black px-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded bg-zinc-900 border border-zinc-800">
-            <Activity className="h-4 w-4 text-zinc-100" />
-          </div>
-          <div>
-            <h1 className="text-sm font-semibold tracking-tight text-zinc-100">
-              PulseETL <span className="font-normal text-zinc-500 ml-1">Data Warehouse</span>
-            </h1>
-          </div>
+      {/* Apple Global Navigation Bar */}
+      <nav className="sticky top-0 z-50 flex h-[52px] items-center justify-between bg-[#1d1d1f]/80 px-4 backdrop-blur-xl lg:px-8 border-b border-white/5">
+        <div className="flex items-center gap-2">
+          <Activity className="h-4 w-4 text-[#f5f5f7]" />
+          <span className="text-xs font-semibold tracking-wide text-[#f5f5f7]">PulseETL</span>
         </div>
-
         <div className="flex items-center gap-4">
           {bannerMsg && (
-            <div className={`flex items-center gap-2 rounded px-3 py-1 text-xs font-medium border ${
-              bannerMsg.type === "ok" ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
-            }`}>
-              {bannerMsg.type === "ok" ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertTriangle className="h-3.5 w-3.5" />}
+            <span className={`text-[11px] font-medium tracking-wide ${bannerMsg.type === "ok" ? "text-[#32d74b]" : "text-[#ff453a]"}`}>
               {bannerMsg.text}
-            </div>
+            </span>
           )}
-          
           <button
             onClick={loadAllData}
             disabled={isLoading}
-            className="flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-100 disabled:opacity-50"
+            className="text-[11px] font-medium text-[#86868b] transition-colors hover:text-[#f5f5f7] disabled:opacity-50 flex items-center gap-1"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-3 w-3 ${isLoading ? "animate-spin" : ""}`} />
             Refresh
           </button>
+        </div>
+      </nav>
 
-          {/* High-contrast Apple/Vercel style primary action button */}
+      <main className="mx-auto max-w-[1200px] px-4 pt-16 sm:px-6 lg:px-8">
+        
+        {/* Apple-style Hero Typography */}
+        <div className="mb-12 text-center md:text-left flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div>
+            <h1 className="text-4xl md:text-6xl font-semibold tracking-tighter text-[#f5f5f7]">
+              Telemetry. <br className="hidden md:block" />
+              <span className="text-[#86868b]">Perfectly timed.</span>
+            </h1>
+          </div>
+          
           <button
             onClick={handleRunPipeline}
             disabled={isTriggering}
-            className="flex items-center gap-2 rounded-md bg-white px-4 py-1.5 text-xs font-semibold text-black transition-colors hover:bg-zinc-200 disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#f5f5f7] px-6 py-2.5 text-sm font-semibold text-black transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
           >
-            <Play className="h-3 w-3 fill-current" />
+            {isTriggering ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              <Play className="h-4 w-4 fill-current" />
+            )}
             {isTriggering ? "Running..." : "Run Pipeline"}
           </button>
         </div>
-      </header>
 
-      {/* MAIN BODY */}
-      <main className="relative z-10 flex flex-1 overflow-hidden">
-        
-        {/* LEFT SIDEBAR (Scrollable, fixed width, flat design) */}
-        <aside className="flex w-[380px] flex-col gap-8 overflow-y-auto border-r border-zinc-800/80 bg-[#0a0a0a] p-6 custom-scrollbar">
+        {/* Bento Box Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           
-          {/* Section: City Selector */}
-          <div>
-            <h2 className="mb-3 text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">Region</h2>
-            <div className="grid grid-cols-2 gap-2">
-              {CITIES.map((city) => {
-                const isActive = selectedCity === city;
-                return (
+          {/* Top Row: KPIs */}
+          <div className="flex flex-col justify-between rounded-[2rem] bg-[#1d1d1f] p-8 lg:col-span-1">
+            <Database className="h-6 w-6 text-[#86868b]" />
+            <div className="mt-8">
+              <p className="text-5xl font-semibold tracking-tighter text-[#f5f5f7]">
+                {overview ? overview.total_rows.toLocaleString() : "—"}
+              </p>
+              <p className="mt-2 text-sm font-medium text-[#86868b]">Fact Rows</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-between rounded-[2rem] bg-[#1d1d1f] p-8 lg:col-span-1">
+            <AlertCircle className="h-6 w-6 text-[#86868b]" />
+            <div className="mt-8">
+              <p className="text-5xl font-semibold tracking-tighter text-[#f5f5f7]">
+                {overview ? overview.critical_anomalies + overview.warning_anomalies : "—"}
+              </p>
+              <p className="mt-2 text-sm font-medium text-[#86868b]">7-Day Anomalies</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-between rounded-[2rem] bg-[#1d1d1f] p-8 lg:col-span-1">
+            <CheckCircle2 className="h-6 w-6 text-[#86868b]" />
+            <div className="mt-8">
+              <p className="text-2xl font-semibold tracking-tight text-[#f5f5f7] truncate">
+                {overview?.latest_run?.status || "—"}
+              </p>
+              <p className="mt-2 text-sm font-medium text-[#86868b]">Last Status</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col justify-between rounded-[2rem] bg-[#1d1d1f] p-8 lg:col-span-1">
+            <Server className="h-6 w-6 text-[#86868b]" />
+            <div className="mt-8">
+              <p className="text-4xl font-semibold tracking-tighter text-[#f5f5f7]">
+                {overview?.latest_run ? `${(overview.latest_run.duration_ms / 1000).toFixed(2)}s` : "—"}
+              </p>
+              <p className="mt-2 text-sm font-medium text-[#86868b]">Latency</p>
+            </div>
+          </div>
+
+          {/* Main Chart Section: Spans 3 columns on large screens */}
+          <div className="flex flex-col rounded-[2rem] bg-[#1d1d1f] p-8 lg:col-span-3 min-h-[500px]">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+              
+              {/* Apple-style Pill Segmented Control for Cities */}
+              <div className="inline-flex rounded-full bg-[#333336] p-1">
+                {CITIES.map((city) => (
                   <button
                     key={city}
                     onClick={() => setSelectedCity(city)}
-                    className={`flex items-center justify-between rounded-md border p-2.5 transition-all ${
-                      isActive
-                        ? "border-zinc-500 bg-zinc-800/50"
-                        : "border-zinc-800/50 bg-transparent hover:border-zinc-700"
+                    className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                      selectedCity === city
+                        ? "bg-[#636366] text-white shadow-sm"
+                        : "text-[#86868b] hover:text-white"
                     }`}
                   >
-                    <span className={`text-xs font-medium ${isActive ? "text-zinc-100" : "text-zinc-400"}`}>
-                      {city}
-                    </span>
-                    <MapPin className={`h-3.5 w-3.5 ${isActive ? "text-zinc-300" : "text-zinc-600"}`} />
+                    {city}
                   </button>
-                );
-              })}
+                ))}
+              </div>
+
+              {/* Apple-style Pill Segmented Control for Metrics */}
+              <div className="inline-flex rounded-full bg-[#333336] p-1">
+                {METRICS.map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setSelectedMetric(m.id)}
+                    className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                      selectedMetric === m.id
+                        ? "bg-[#636366] text-white shadow-sm"
+                        : "text-[#86868b] hover:text-white"
+                    }`}
+                  >
+                    {m.label.split(" ")[0]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex-1 w-full relative">
+              {timeseries && (
+                <div className="absolute top-0 right-0 z-10 flex gap-4 text-right">
+                  <div>
+                    <p className="text-[10px] font-semibold tracking-widest text-[#86868b] uppercase">Mean</p>
+                    <p className="text-xl font-semibold tracking-tight text-[#f5f5f7]">{timeseries.rolling_mean}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold tracking-widest text-[#86868b] uppercase">Threshold</p>
+                    <p className="text-xl font-semibold tracking-tight text-[#ff9f0a]">{timeseries.upper_threshold}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="h-[350px] w-full mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="appleGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={activeMetricMeta.color} stopOpacity={0.4} />
+                        <stop offset="100%" stopColor={activeMetricMeta.color} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="4 4" stroke="#333336" vertical={false} />
+                    <XAxis
+                      dataKey="timeLabel"
+                      tick={{ fill: "#86868b", fontSize: 12, fontWeight: 500 }}
+                      tickLine={false}
+                      axisLine={false}
+                      minTickGap={40}
+                      dy={15}
+                    />
+                    <YAxis 
+                      tick={{ fill: "#86868b", fontSize: 12, fontWeight: 500 }} 
+                      tickLine={false}
+                      axisLine={false}
+                      dx={-15}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "rgba(29, 29, 31, 0.8)",
+                        backdropFilter: "blur(10px)",
+                        borderColor: "rgba(255,255,255,0.1)",
+                        borderRadius: "16px",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        color: "#f5f5f7",
+                        boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)",
+                      }}
+                      itemStyle={{ color: activeMetricMeta.color }}
+                    />
+                    {timeseries && (
+                      <>
+                        <ReferenceLine y={timeseries.rolling_mean} stroke="#86868b" strokeDasharray="3 3" />
+                        <ReferenceLine y={timeseries.upper_threshold} stroke="#ff9f0a" strokeDasharray="3 3" />
+                      </>
+                    )}
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke={activeMetricMeta.color}
+                      strokeWidth={3}
+                      fill="url(#appleGradient)"
+                      activeDot={{ r: 6, fill: "#000", stroke: activeMetricMeta.color, strokeWidth: 3 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
 
-          {/* Section: Minimalist KPI Cards */}
-          <div>
-            <h2 className="mb-3 text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">Metrics</h2>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col justify-between rounded-md border border-zinc-800/80 bg-black p-3.5">
-                <Database className="mb-3 h-4 w-4 text-zinc-500" />
-                <p className="text-xl font-semibold tracking-tight text-zinc-100">{overview ? overview.total_rows.toLocaleString() : "—"}</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Total Fact Rows</p>
-              </div>
-              <div className="flex flex-col justify-between rounded-md border border-zinc-800/80 bg-black p-3.5">
-                <AlertTriangle className="mb-3 h-4 w-4 text-zinc-500" />
-                <p className="text-xl font-semibold tracking-tight text-zinc-100">{overview ? overview.critical_anomalies + overview.warning_anomalies : "—"}</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">7-Day Anomalies</p>
-              </div>
-              <div className="flex flex-col justify-between rounded-md border border-zinc-800/80 bg-black p-3.5">
-                <CheckCircle2 className="mb-3 h-4 w-4 text-zinc-500" />
-                <p className="text-sm font-semibold tracking-tight text-zinc-100 truncate">{overview?.latest_run?.status || "—"}</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Last Pipeline Run</p>
-              </div>
-              <div className="flex flex-col justify-between rounded-md border border-zinc-800/80 bg-black p-3.5">
-                <Server className="mb-3 h-4 w-4 text-zinc-500" />
-                <p className="text-xl font-semibold tracking-tight text-zinc-100">{overview?.latest_run ? `${(overview.latest_run.duration_ms / 1000).toFixed(2)}s` : "—"}</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Execution Latency</p>
-              </div>
+          {/* Anomalies List: Spans 1 column */}
+          <div className="flex flex-col rounded-[2rem] bg-[#1d1d1f] p-8 lg:col-span-1 min-h-[500px]">
+            <div className="flex items-center gap-2 mb-6">
+              <TrendingUp className="h-5 w-5 text-[#86868b]" />
+              <h3 className="text-lg font-semibold tracking-tight text-[#f5f5f7]">Anomaly Log</h3>
             </div>
-          </div>
-
-          {/* Section: Z-Score Anomaly Feed */}
-          <div className="flex flex-1 flex-col overflow-hidden">
-            <h2 className="mb-3 text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">Alerts</h2>
-            <div className="flex-1 overflow-y-auto rounded-md border border-zinc-800/80 bg-black p-1 custom-scrollbar">
+            
+            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
               {anomalies.length === 0 ? (
-                <div className="flex h-full flex-col items-center justify-center p-6 text-center opacity-60">
-                  <CheckCircle2 className="mb-2 h-6 w-6 text-zinc-500" />
-                  <p className="text-xs text-zinc-400">System nominal.<br/>No anomalies in 24h.</p>
+                <div className="flex h-full items-center justify-center text-[#86868b]">
+                  <p className="text-sm font-medium">No alerts today.</p>
                 </div>
               ) : (
-                <div className="space-y-1">
+                <div className="space-y-4">
                   {anomalies.map((a) => (
-                    <div key={a.id} className="rounded p-3 transition hover:bg-zinc-900/50">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs font-medium text-zinc-200">{a.entity_id}</span>
-                        <span className={`rounded-sm px-1.5 py-0.5 text-[9px] font-bold tracking-wider ${
-                          a.severity === "CRITICAL" ? "bg-red-500/10 text-red-400" : "bg-yellow-500/10 text-yellow-400"
-                        }`}>
-                          {a.severity}
+                    <div key={a.id} className="border-b border-[#333336] pb-4 last:border-0">
+                      <div className="flex justify-between items-start mb-1">
+                        <span className="text-sm font-semibold text-[#f5f5f7]">{a.entity_id}</span>
+                        <span className={`text-xs font-bold ${a.severity === "CRITICAL" ? "text-[#ff453a]" : "text-[#ff9f0a]"}`}>
+                          Z {a.z_score > 0 ? `+${a.z_score}` : a.z_score}
                         </span>
                       </div>
-                      <div className="flex items-end justify-between">
+                      <div className="flex justify-between items-end">
                         <div>
-                          <p className="text-[11px] text-zinc-500">{a.metric_name}</p>
-                          <p className="text-[10px] text-zinc-600 mt-0.5">Obs: <span className="text-zinc-400">{a.observed_value}</span></p>
-                        </div>
-                        <div className="text-right">
-                          <p className={`font-mono text-xs font-medium ${a.z_score >= 3.0 ? "text-red-400" : "text-yellow-400"}`}>
-                            Z = {a.z_score > 0 ? `+${a.z_score}` : a.z_score}
-                          </p>
+                          <p className="text-xs text-[#86868b]">{a.metric_name}</p>
+                          <p className="text-xs font-medium text-[#f5f5f7] mt-0.5">{a.observed_value} <span className="text-[#86868b] font-normal">(μ: {a.rolling_mean})</span></p>
                         </div>
                       </div>
                     </div>
@@ -264,138 +354,36 @@ export default function TelemetryDashboardPage() {
               )}
             </div>
           </div>
-        </aside>
 
-        {/* RIGHT MAIN AREA (Flat panels, utilitarian structure) */}
-        <section className="flex flex-1 flex-col overflow-hidden p-6 gap-6 bg-black">
-          
-          {/* Main Chart Area */}
-          <div className="flex min-h-[450px] flex-1 flex-col rounded-lg border border-zinc-800/80 bg-[#0a0a0a]">
-            
-            {/* Chart Header */}
-            <div className="flex flex-wrap items-center justify-between border-b border-zinc-800/80 px-6 py-4">
-              <div className="flex items-center gap-3">
-                <TrendingUp className="h-4 w-4 text-zinc-500" />
-                <h2 className="text-sm font-medium text-zinc-100">
-                  {selectedCity} <span className="text-zinc-600 px-1">/</span> {activeMetricMeta.label}
-                </h2>
-              </div>
-              
-              <div className="flex items-center gap-5">
-                {timeseries && (
-                  <div className="hidden items-center gap-4 xl:flex">
-                    <p className="text-[11px] text-zinc-500">Mean: <span className="font-mono text-zinc-300">{timeseries.rolling_mean}</span></p>
-                    <div className="h-3 w-px bg-zinc-800" />
-                    <p className="text-[11px] text-zinc-500">Alert: <span className="font-mono text-zinc-300">{timeseries.upper_threshold}</span></p>
-                  </div>
-                )}
-                <div className="flex rounded border border-zinc-800 bg-black p-0.5">
-                  {METRICS.map((m) => (
-                    <button
-                      key={m.id}
-                      onClick={() => setSelectedMetric(m.id)}
-                      className={`rounded-sm px-3 py-1 text-[11px] font-medium transition-all ${
-                        selectedMetric === m.id
-                          ? "bg-zinc-800 text-zinc-100"
-                          : "text-zinc-500 hover:text-zinc-300"
-                      }`}
-                    >
-                      {m.label.split(" ")[0]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Recharts Area - Stark, minimal visualization */}
-            <div className="flex-1 p-6 pb-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={activeMetricMeta.color} stopOpacity={0.15} />
-                      <stop offset="95%" stopColor={activeMetricMeta.color} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                  <XAxis
-                    dataKey="timeLabel"
-                    tick={{ fill: "#71717a", fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                    minTickGap={40}
-                    dy={10}
-                  />
-                  <YAxis 
-                    tick={{ fill: "#71717a", fontSize: 11 }} 
-                    tickLine={false}
-                    axisLine={false}
-                    dx={-10}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#000000",
-                      borderColor: "#27272a",
-                      borderRadius: "6px",
-                      fontSize: "12px",
-                      color: "#fafafa",
-                      boxShadow: "0 4px 6px -1px rgba(0,0,0,0.5)",
-                    }}
-                    itemStyle={{ color: activeMetricMeta.color, fontWeight: "500" }}
-                  />
-                  {timeseries && (
-                    <>
-                      <ReferenceLine y={timeseries.rolling_mean} stroke="#52525b" strokeDasharray="4 4" />
-                      <ReferenceLine y={timeseries.upper_threshold} stroke="#71717a" strokeDasharray="2 2" />
-                    </>
-                  )}
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke={activeMetricMeta.color}
-                    strokeWidth={1.5}
-                    fillOpacity={1}
-                    fill="url(#colorGradient)"
-                    activeDot={{ r: 4, fill: "#000", stroke: activeMetricMeta.color, strokeWidth: 2 }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Audit Log Table */}
-          <div className="flex h-[35%] min-h-[220px] flex-col rounded-lg border border-zinc-800/80 bg-[#0a0a0a]">
-            <div className="flex items-center gap-2 border-b border-zinc-800/80 px-6 py-3.5">
-              <Clock className="h-4 w-4 text-zinc-500" />
-              <h3 className="text-xs font-medium text-zinc-300">Execution Audit Log</h3>
-            </div>
-            <div className="flex-1 overflow-auto p-1 custom-scrollbar">
-              <table className="w-full text-left text-xs">
-                <thead className="sticky top-0 bg-[#0a0a0a] z-10">
+          {/* Audit Log Table: Full Width */}
+          <div className="flex flex-col rounded-[2rem] bg-[#1d1d1f] p-8 lg:col-span-4">
+            <h3 className="text-lg font-semibold tracking-tight text-[#f5f5f7] mb-6">Execution History</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead>
                   <tr>
-                    <th className="px-6 py-2.5 font-medium text-zinc-500 border-b border-zinc-800/50">Trigger Source</th>
-                    <th className="px-6 py-2.5 font-medium text-zinc-500 border-b border-zinc-800/50">Status</th>
-                    <th className="px-6 py-2.5 font-medium text-zinc-500 border-b border-zinc-800/50">Rows Ingested</th>
-                    <th className="px-6 py-2.5 font-medium text-zinc-500 border-b border-zinc-800/50">Latency</th>
-                    <th className="px-6 py-2.5 font-medium text-zinc-500 border-b border-zinc-800/50">Timestamp (UTC)</th>
+                    <th className="pb-4 font-medium text-[#86868b] border-b border-[#333336]">Trigger Source</th>
+                    <th className="pb-4 font-medium text-[#86868b] border-b border-[#333336]">Status</th>
+                    <th className="pb-4 font-medium text-[#86868b] border-b border-[#333336]">Rows Ingested</th>
+                    <th className="pb-4 font-medium text-[#86868b] border-b border-[#333336]">Latency</th>
+                    <th className="pb-4 font-medium text-[#86868b] border-b border-[#333336]">Timestamp</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/50">
+                <tbody className="divide-y divide-[#333336]">
                   {runs.map((r) => (
-                    <tr key={r.run_id} className="transition-colors hover:bg-zinc-900/50">
-                      <td className="px-6 py-3 font-mono text-[11px] text-zinc-400">{r.trigger_source}</td>
-                      <td className="px-6 py-3">
-                        <span className={`inline-flex rounded-sm px-1.5 py-0.5 text-[10px] font-medium border ${
-                            r.status === "SUCCESS" ? "bg-green-500/10 text-green-400 border-transparent" : 
-                            r.status === "PARTIAL_WARNING" ? "bg-yellow-500/10 text-yellow-400 border-transparent" : 
-                            "bg-red-500/10 text-red-400 border-transparent"
-                        }`}>
+                    <tr key={r.run_id}>
+                      <td className="py-4 text-[#f5f5f7] font-medium">{r.trigger_source}</td>
+                      <td className="py-4">
+                        <span className={
+                          r.status === "SUCCESS" ? "text-[#32d74b]" : 
+                          r.status === "PARTIAL_WARNING" ? "text-[#ff9f0a]" : "text-[#ff453a]"
+                        }>
                           {r.status}
                         </span>
                       </td>
-                      <td className="px-6 py-3 text-zinc-300">{r.rows_ingested}</td>
-                      <td className="px-6 py-3 text-zinc-500">{r.duration_ms}ms</td>
-                      <td className="px-6 py-3 text-zinc-500 text-[11px]">
+                      <td className="py-4 text-[#f5f5f7]">{r.rows_ingested}</td>
+                      <td className="py-4 text-[#86868b]">{r.duration_ms}ms</td>
+                      <td className="py-4 text-[#86868b]">
                         {new Date(r.executed_at).toLocaleString([], { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
                       </td>
                     </tr>
@@ -405,14 +393,14 @@ export default function TelemetryDashboardPage() {
             </div>
           </div>
 
-        </section>
+        </div>
       </main>
-      
+
       <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333336; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #636366; }
       `}} />
     </div>
   );
