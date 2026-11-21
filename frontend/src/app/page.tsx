@@ -155,7 +155,7 @@ export default function TelemetryDashboardPage() {
       <main className="flex flex-1 flex-col gap-4 p-3 lg:overflow-hidden lg:p-5">
         
         {/* ROW 1: KPI CARDS (2x2 on Mobile, 1x4 on Desktop) */}
-        <div className="grid shrink-0 grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4 lg:h-[110px]">
+        <div className="grid shrink-0 grid-cols-2 gap-3 lg:h-[110px] lg:grid-cols-4 lg:gap-4">
           <div className="flex flex-col justify-between rounded-3xl border border-black/5 bg-white p-4 shadow-sm lg:p-5">
             <div className="flex items-center justify-between">
               <div>
@@ -209,8 +209,8 @@ export default function TelemetryDashboardPage() {
         <div className="flex flex-col gap-4 lg:min-h-0 lg:flex-1 lg:flex-row lg:gap-4">
           
           {/* Main Chart */}
-          <div className="flex min-h-[380px] flex-1 flex-col rounded-3xl border border-black/5 bg-white p-4 shadow-sm lg:p-6">
-            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col rounded-3xl border border-black/5 bg-white p-4 shadow-sm lg:flex-1 lg:p-6">
+            <div className="mb-4 flex shrink-0 flex-col gap-3 md:flex-row md:items-center md:justify-between">
               
               {/* Responsive Scrollable Segmented Controls */}
               <div className="custom-scrollbar flex overflow-x-auto rounded-full bg-[#e5e5ea] p-1">
@@ -241,7 +241,8 @@ export default function TelemetryDashboardPage() {
               </div>
             </div>
 
-            <div className="relative w-full flex-1 min-h-[250px] lg:min-h-0">
+            {/* MOBILE HEIGHT FIX: Set strict pixel height on mobile (h-[280px]), flex-1 on desktop */}
+            <div className="relative h-[280px] w-full shrink-0 lg:min-h-0 lg:flex-1">
               {timeseries && (
                 <div className="absolute right-0 top-0 z-10 hidden gap-4 text-right md:flex">
                   <div>
@@ -284,7 +285,7 @@ export default function TelemetryDashboardPage() {
             </div>
           </div>
 
-          {/* Anomaly Sidebar (Mobile fixed height, Desktop stretches) */}
+          {/* Anomaly Sidebar */}
           <div className="flex max-h-[350px] flex-col rounded-3xl border border-black/5 bg-white p-4 shadow-sm lg:max-h-none lg:w-[320px] lg:p-6 xl:w-[400px]">
             <div className="mb-3 flex items-center gap-2 lg:mb-4">
               <TrendingUp className="h-4 w-4 text-[#8e8e93] lg:h-5 lg:w-5" />
@@ -319,7 +320,7 @@ export default function TelemetryDashboardPage() {
           </div>
         </div>
 
-        {/* ROW 3: AUDIT LOG (Bottom strip on Desktop) */}
+        {/* ROW 3: AUDIT LOG */}
         <div className="flex flex-col rounded-3xl border border-black/5 bg-white p-4 shadow-sm lg:h-[240px] lg:shrink-0 lg:p-6">
           <div className="mb-3 flex items-center gap-2 lg:mb-4">
             <Clock className="h-4 w-4 text-[#8e8e93]" />
