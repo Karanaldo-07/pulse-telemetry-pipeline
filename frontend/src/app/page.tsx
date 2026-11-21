@@ -241,8 +241,8 @@ export default function TelemetryDashboardPage() {
               </div>
             </div>
 
-            {/* MOBILE HEIGHT FIX: Set strict pixel height on mobile (h-[280px]), flex-1 on desktop */}
-            <div className="relative h-[280px] w-full shrink-0 lg:min-h-0 lg:flex-1">
+            {/* EXPANDED HEIGHT & WIDTH FIX: 320px on mobile, 99% width to stop overflow */}
+            <div className="relative h-[320px] w-full shrink-0 lg:min-h-0 lg:flex-1">
               {timeseries && (
                 <div className="absolute right-0 top-0 z-10 hidden gap-4 text-right md:flex">
                   <div>
@@ -257,8 +257,9 @@ export default function TelemetryDashboardPage() {
               )}
               
               <div className="h-full w-full pt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                <ResponsiveContainer width="99%" height="100%">
+                  {/* EXPANDED MARGINS: top: 25 prevents peak clipping, right: 15 prevents last point clipping, bottom: 5 protects x-axis */}
+                  <AreaChart data={chartData} margin={{ top: 25, right: 15, left: -15, bottom: 5 }}>
                     <defs>
                       <linearGradient id="appleGradientLight" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor={activeMetricMeta.color} stopOpacity={0.25} />
