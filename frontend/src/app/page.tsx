@@ -36,10 +36,10 @@ import {
 const CITIES = ["Pune", "Mumbai", "Bengaluru", "Delhi", "Hyderabad"];
 
 const METRICS = [
-  { id: "pm2_5", label: "PM2.5 (µg/m³)", color: "#818cf8" },
-  { id: "pm10", label: "PM10 (µg/m³)", color: "#38bdf8" },
-  { id: "temperature_2m", label: "Temperature (°C)", color: "#fb923c" },
-  { id: "relative_humidity_2m", label: "Humidity (%)", color: "#34d399" },
+  { id: "pm2_5", label: "PM2.5 (µg/m³)", color: "#a1a1aa" },
+  { id: "pm10", label: "PM10 (µg/m³)", color: "#71717a" },
+  { id: "temperature_2m", label: "Temperature (°C)", color: "#e4e4e7" },
+  { id: "relative_humidity_2m", label: "Humidity (%)", color: "#d4d4d8" },
 ];
 
 export default function TelemetryDashboardPage() {
@@ -114,21 +114,18 @@ export default function TelemetryDashboardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 font-sans antialiased selection:bg-zinc-800">
       {/* Top Navbar */}
-      <header className="border-b border-slate-800 bg-slate-900/80 px-6 py-4 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/80 px-6 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
-              <Activity className="h-5 w-5" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-zinc-900 text-zinc-300 shadow-sm">
+              <Activity className="h-4 w-4" />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight text-white">
-                PulseETL <span className="text-cyan-400">• Live Telemetry & Anomaly Warehouse</span>
+              <h1 className="text-sm font-semibold tracking-tight text-zinc-100">
+                PulseETL <span className="font-normal text-zinc-500 ml-1">Telemetry Warehouse</span>
               </h1>
-              <p className="text-xs text-slate-400">
-                Idempotent PostgreSQL UPSERT • Rolling 7-Day Z-Score Detector • GitHub Actions Cron
-              </p>
             </div>
           </div>
 
@@ -136,7 +133,7 @@ export default function TelemetryDashboardPage() {
             <button
               onClick={loadAllData}
               disabled={isLoading}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-200 hover:bg-slate-700 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-md border border-white/10 bg-transparent px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-white disabled:opacity-50"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
               Refresh
@@ -145,80 +142,85 @@ export default function TelemetryDashboardPage() {
             <button
               onClick={handleRunPipeline}
               disabled={isTriggering}
-              className="flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-950 hover:bg-cyan-500 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-md bg-white px-4 py-1.5 text-xs font-medium text-black transition-colors hover:bg-zinc-200 disabled:opacity-50"
             >
-              <Play className="h-4 w-4" />
-              {isTriggering ? "Running ETL..." : "Run Live ETL Pipeline"}
+              <Play className="h-3.5 w-3.5 fill-current" />
+              {isTriggering ? "Running..." : "Run Pipeline"}
             </button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl space-y-6 p-6">
+      <main className="mx-auto max-w-7xl space-y-8 p-6 pt-8">
         {bannerMsg && (
           <div
-            className={`rounded-xl border px-4 py-3 text-sm ${
+            className={`rounded-lg border px-4 py-3 text-sm flex items-center gap-3 ${
               bannerMsg.type === "ok"
-                ? "border-emerald-500/40 bg-emerald-950/40 text-emerald-200"
-                : "border-rose-500/40 bg-rose-950/40 text-rose-200"
+                ? "border-green-500/20 bg-green-500/10 text-green-400"
+                : "border-red-500/20 bg-red-500/10 text-red-400"
             }`}
           >
+            {bannerMsg.type === "ok" ? (
+              <CheckCircle2 className="h-4 w-4" />
+            ) : (
+              <AlertTriangle className="h-4 w-4" />
+            )}
             {bannerMsg.text}
           </div>
         )}
 
         {/* Top KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span>Warehouse Fact Rows</span>
-              <Database className="h-4 w-4 text-cyan-400" />
+          <div className="rounded-xl border border-white/10 bg-[#0f0f0f] p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-zinc-400">Warehouse Fact Rows</span>
+              <Database className="h-4 w-4 text-zinc-600" />
             </div>
-            <p className="mt-2 text-2xl font-bold text-white">
+            <p className="mt-3 text-3xl font-semibold tracking-tight text-zinc-100">
               {overview ? overview.total_rows.toLocaleString() : "—"}
             </p>
-            <p className="mt-1 text-xs text-slate-400">5 Cities • 4 Hourly Metrics</p>
+            <p className="mt-1 text-xs text-zinc-500">5 Cities • 4 Hourly Metrics</p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span>7-Day Z-Score Anomalies</span>
-              <AlertTriangle className="h-4 w-4 text-amber-400" />
+          <div className="rounded-xl border border-white/10 bg-[#0f0f0f] p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-zinc-400">7-Day Z-Score Anomalies</span>
+              <AlertTriangle className="h-4 w-4 text-zinc-600" />
             </div>
-            <p className="mt-2 text-2xl font-bold text-white">
+            <p className="mt-3 text-3xl font-semibold tracking-tight text-zinc-100">
               {overview ? overview.critical_anomalies + overview.warning_anomalies : "—"}
             </p>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-zinc-500">
               {overview
-                ? `${overview.critical_anomalies} Critical (|z|≥3) • ${overview.warning_anomalies} Warning (|z|≥2)`
+                ? `${overview.critical_anomalies} Critical • ${overview.warning_anomalies} Warning`
                 : "Loading..."}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span>Last Pipeline Status</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+          <div className="rounded-xl border border-white/10 bg-[#0f0f0f] p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-zinc-400">Last Pipeline Status</span>
+              <CheckCircle2 className="h-4 w-4 text-zinc-600" />
             </div>
-            <p className="mt-2 text-2xl font-bold text-emerald-400">
+            <p className="mt-3 text-2xl font-semibold tracking-tight text-zinc-100">
               {overview?.latest_run?.status || "—"}
             </p>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-zinc-500">
               {overview?.latest_run
-                ? `DQ Rejected: ${overview.latest_run.dq_rejected_rows} rows`
+                ? `Rejected: ${overview.latest_run.dq_rejected_rows} rows`
                 : "Awaiting run"}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span>ETL Execution Latency</span>
-              <Server className="h-4 w-4 text-indigo-400" />
+          <div className="rounded-xl border border-white/10 bg-[#0f0f0f] p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-zinc-400">ETL Execution Latency</span>
+              <Server className="h-4 w-4 text-zinc-600" />
             </div>
-            <p className="mt-2 text-2xl font-bold text-white">
+            <p className="mt-3 text-3xl font-semibold tracking-tight text-zinc-100">
               {overview?.latest_run ? `${(overview.latest_run.duration_ms / 1000).toFixed(2)}s` : "—"}
             </p>
-            <p className="mt-1 text-xs text-slate-400">Batch Extract + UPSERT + Z-Score</p>
+            <p className="mt-1 text-xs text-zinc-500">Batch Extract + UPSERT + Z-Score</p>
           </div>
         </div>
 
@@ -236,20 +238,20 @@ export default function TelemetryDashboardPage() {
               <button
                 key={city}
                 onClick={() => setSelectedCity(city)}
-                className={`rounded-xl border p-3 text-left transition ${
+                className={`rounded-lg border p-4 text-left transition-all ${
                   active
-                    ? "border-cyan-500 bg-cyan-950/30"
-                    : "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                    ? "border-zinc-500 bg-zinc-900 shadow-sm"
+                    : "border-white/5 bg-transparent hover:bg-zinc-900/50 hover:border-white/10"
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-white">{city}</span>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-sm font-medium text-zinc-100">{city}</span>
+                  <span className="text-xs text-zinc-400">
                     {temp ? `${temp.metric_value}°C` : ""}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-cyan-300">
-                  PM2.5: <span className="font-mono font-semibold">{pm25 ? pm25.metric_value : "—"}</span>
+                <p className="mt-2 text-xs text-zinc-500 flex justify-between items-center">
+                  PM2.5 <span className="font-mono text-zinc-300">{pm25 ? pm25.metric_value : "—"}</span>
                 </p>
               </button>
             );
@@ -257,71 +259,79 @@ export default function TelemetryDashboardPage() {
         </div>
 
         {/* Interactive Time-Series Chart */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="rounded-xl border border-white/10 bg-[#0f0f0f] p-6 shadow-sm">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="flex items-center gap-2 text-base font-semibold text-white">
-                <TrendingUp className="h-4 w-4 text-cyan-400" />
-                {selectedCity} — {activeMetricMeta.label} (7-Day Rolling Window)
+              <h2 className="flex items-center gap-2 text-sm font-medium text-zinc-100">
+                <TrendingUp className="h-4 w-4 text-zinc-500" />
+                {selectedCity} — {activeMetricMeta.label}
               </h2>
               {timeseries && (
-                <p className="mt-0.5 text-xs text-slate-400">
-                  Rolling Mean (μ): <span className="text-slate-200 font-mono">{timeseries.rolling_mean}</span> •
-                  Std Dev (σ): <span className="text-slate-200 font-mono">{timeseries.rolling_std}</span> •
-                  +2σ Alert Threshold:{" "}
-                  <span className="text-amber-400 font-mono">{timeseries.upper_threshold}</span>
+                <p className="mt-1.5 text-xs text-zinc-500">
+                  Mean (μ): <span className="text-zinc-300 font-mono ml-1 mr-3">{timeseries.rolling_mean}</span>
+                  Std Dev (σ): <span className="text-zinc-300 font-mono ml-1 mr-3">{timeseries.rolling_std}</span>
+                  Alert Threshold: <span className="text-zinc-300 font-mono ml-1">{timeseries.upper_threshold}</span>
                 </p>
               )}
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex rounded-md border border-white/10 p-0.5 bg-black">
               {METRICS.map((m) => (
                 <button
                   key={m.id}
                   onClick={() => setSelectedMetric(m.id)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                  className={`rounded-[4px] px-3 py-1.5 text-xs font-medium transition-all ${
                     selectedMetric === m.id
-                      ? "bg-cyan-600 text-white"
-                      : "border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700"
+                      ? "bg-zinc-800 text-zinc-100 shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-300"
                   }`}
                 >
-                  {m.label}
+                  {m.label.split(" ")[0]}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="h-72 w-full">
+          <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+              <LineChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
                 <XAxis
                   dataKey="timeLabel"
-                  tick={{ fill: "#94a3b8", fontSize: 11 }}
-                  minTickGap={28}
+                  tick={{ fill: "#71717a", fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={false}
+                  minTickGap={30}
+                  dy={10}
                 />
-                <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                <YAxis 
+                  tick={{ fill: "#71717a", fontSize: 11 }} 
+                  tickLine={false}
+                  axisLine={false}
+                  dx={-10}
+                />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#0f172a",
-                    borderColor: "#334155",
-                    borderRadius: "0.75rem",
+                    backgroundColor: "#09090b",
+                    borderColor: "#27272a",
+                    borderRadius: "8px",
                     fontSize: "12px",
+                    color: "#f4f4f5",
+                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                   }}
+                  itemStyle={{ color: "#f4f4f5" }}
                 />
                 {timeseries && (
                   <>
                     <ReferenceLine
                       y={timeseries.rolling_mean}
-                      stroke="#64748b"
+                      stroke="#52525b"
                       strokeDasharray="4 4"
-                      label={{ value: "Mean (μ)", fill: "#94a3b8", fontSize: 11 }}
                     />
                     <ReferenceLine
                       y={timeseries.upper_threshold}
-                      stroke="#f59e0b"
-                      strokeDasharray="4 4"
-                      label={{ value: "+2σ Alert", fill: "#fbbf24", fontSize: 11 }}
+                      stroke="#71717a"
+                      strokeDasharray="2 2"
                     />
                   </>
                 )}
@@ -329,109 +339,97 @@ export default function TelemetryDashboardPage() {
                   type="monotone"
                   dataKey="value"
                   stroke={activeMetricMeta.color}
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                   dot={false}
+                  activeDot={{ r: 4, fill: activeMetricMeta.color, stroke: "#000", strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Bottom Grid: Anomaly Alerts + Pipeline Observability Audit Log */}
+        {/* Bottom Grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Z-Score Anomaly Feed */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-300">
-              Detected Z-Score Anomalies (|Z| ≥ 2.0)
-            </h3>
+          <div className="rounded-xl border border-white/10 bg-[#0f0f0f] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-medium text-zinc-100">Detected Anomalies (|Z| ≥ 2.0)</h3>
             {anomalies.length === 0 ? (
-              <p className="text-sm text-slate-400">No anomalies breached ±2σ in the last 24h.</p>
+              <p className="text-sm text-zinc-500">No anomalies breached ±2σ in the last 24h.</p>
             ) : (
-              <div className="max-h-72 space-y-2.5 overflow-y-auto pr-1">
-                {anomalies.map((a) => (
-                  <div
-                    key={a.id}
-                    className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/70 p-3 text-xs"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`rounded px-1.5 py-0.5 font-semibold ${
-                            a.severity === "CRITICAL"
-                              ? "bg-rose-500/20 text-rose-300"
-                              : "bg-amber-500/20 text-amber-300"
-                          }`}
-                        >
-                          {a.severity}
-                        </span>
-                        <span className="font-semibold text-white">{a.entity_id}</span>
-                        <span className="font-mono text-slate-400">{a.metric_name}</span>
+              <div className="max-h-[300px] overflow-y-auto pr-2">
+                <div className="divide-y divide-white/5">
+                  {anomalies.map((a) => (
+                    <div key={a.id} className="py-3 flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-medium border ${
+                              a.severity === "CRITICAL"
+                                ? "bg-red-500/10 text-red-400 border-red-500/20"
+                                : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                            }`}
+                          >
+                            {a.severity}
+                          </span>
+                          <span className="text-sm font-medium text-zinc-200">{a.entity_id}</span>
+                          <span className="text-xs font-mono text-zinc-500">{a.metric_name}</span>
+                        </div>
+                        <p className="mt-1.5 text-xs text-zinc-500">
+                          Observed: <span className="text-zinc-300">{a.observed_value}</span> (μ: {a.rolling_mean})
+                        </p>
                       </div>
-                      <p className="mt-1 text-slate-400">
-                        Observed: <span className="text-slate-200">{a.observed_value}</span> (Mean:{" "}
-                        {a.rolling_mean}, Std: {a.rolling_std})
-                      </p>
+                      <div className="text-right">
+                        <span className="font-mono text-sm font-medium text-zinc-300">
+                          Z = {a.z_score > 0 ? `+${a.z_score}` : a.z_score}
+                        </span>
+                        <p className="mt-1 text-[10px] text-zinc-600">
+                          {new Date(a.recorded_at).toLocaleString([], {
+                            month: "short",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className="font-mono text-sm font-bold text-amber-300">
-                        Z = {a.z_score > 0 ? `+${a.z_score}` : a.z_score}
-                      </span>
-                      <p className="mt-0.5 text-[11px] text-slate-500">
-                        {new Date(a.recorded_at).toLocaleString([], {
-                          month: "short",
-                          day: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </div>
 
           {/* Pipeline Observability Audit Log */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-300">
-              Pipeline SLA & Execution Audit Log
-            </h3>
-            <div className="max-h-72 overflow-y-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="border-b border-slate-800 text-slate-400">
+          <div className="rounded-xl border border-white/10 bg-[#0f0f0f] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-medium text-zinc-100">Execution Audit Log</h3>
+            <div className="max-h-[300px] overflow-y-auto pr-2">
+              <table className="w-full text-left text-sm">
+                <thead className="sticky top-0 bg-[#0f0f0f]">
                   <tr>
-                    <th className="pb-2">Trigger</th>
-                    <th className="pb-2">Status</th>
-                    <th className="pb-2">Rows</th>
-                    <th className="pb-2">Latency</th>
-                    <th className="pb-2">Executed (UTC)</th>
+                    <th className="pb-3 font-medium text-zinc-500 border-b border-white/10">Trigger</th>
+                    <th className="pb-3 font-medium text-zinc-500 border-b border-white/10">Status</th>
+                    <th className="pb-3 font-medium text-zinc-500 border-b border-white/10">Rows</th>
+                    <th className="pb-3 font-medium text-zinc-500 border-b border-white/10">Latency</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-white/5">
                   {runs.map((r) => (
                     <tr key={r.run_id}>
-                      <td className="py-2 font-mono text-slate-300">{r.trigger_source}</td>
-                      <td className="py-2">
+                      <td className="py-3 font-mono text-xs text-zinc-400">{r.trigger_source.replace('_', ' ')}</td>
+                      <td className="py-3">
                         <span
-                          className={`rounded px-1.5 py-0.5 font-semibold ${
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-medium border ${
                             r.status === "SUCCESS"
-                              ? "bg-emerald-500/15 text-emerald-300"
-                              : "bg-rose-500/15 text-rose-300"
+                              ? "bg-green-500/10 text-green-400 border-green-500/20"
+                              : r.status === "PARTIAL_WARNING"
+                              ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                              : "bg-red-500/10 text-red-400 border-red-500/20"
                           }`}
                         >
                           {r.status}
                         </span>
                       </td>
-                      <td className="py-2 text-slate-200">{r.rows_ingested}</td>
-                      <td className="py-2 text-slate-400">{r.duration_ms}ms</td>
-                      <td className="py-2 text-slate-400">
-                        {new Date(r.executed_at).toLocaleString([], {
-                          month: "short",
-                          day: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </td>
+                      <td className="py-3 text-xs text-zinc-300">{r.rows_ingested}</td>
+                      <td className="py-3 text-xs text-zinc-500">{r.duration_ms}ms</td>
                     </tr>
                   ))}
                 </tbody>
