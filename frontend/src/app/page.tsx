@@ -35,11 +35,12 @@ import {
 
 const CITIES = ["Pune", "Mumbai", "Bengaluru", "Delhi", "Hyderabad"];
 
+// Apple Light Mode Vivid Accents
 const METRICS = [
-  { id: "pm2_5", label: "PM2.5", unit: "µg/m³", color: "#2997ff" }, 
-  { id: "pm10", label: "PM10", unit: "µg/m³", color: "#86868b" }, 
-  { id: "temperature_2m", label: "Temperature", unit: "°C", color: "#ff9f0a" }, 
-  { id: "relative_humidity_2m", label: "Humidity", unit: "%", color: "#32d74b" }, 
+  { id: "pm2_5", label: "PM2.5", unit: "µg/m³", color: "#007aff" }, // Apple Blue
+  { id: "pm10", label: "PM10", unit: "µg/m³", color: "#8e8e93" }, // Apple Gray
+  { id: "temperature_2m", label: "Temperature", unit: "°C", color: "#ff9500" }, // Apple Orange
+  { id: "relative_humidity_2m", label: "Humidity", unit: "%", color: "#34c759" }, // Apple Green
 ];
 
 export default function TelemetryDashboardPage() {
@@ -115,25 +116,25 @@ export default function TelemetryDashboardPage() {
   }));
 
   return (
-    // STRICT EDGE-TO-EDGE WRAPPER
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#000000] font-sans text-[#f5f5f7] selection:bg-[#2997ff] selection:text-white">
+    // STRICT EDGE-TO-EDGE WRAPPER - Apple Light Theme (#f5f5f7 background)
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#f5f5f7] font-sans text-[#1d1d1f] selection:bg-[#007aff] selection:text-white">
       
-      {/* COMPACT TOP NAVIGATION */}
-      <nav className="flex h-14 shrink-0 items-center justify-between border-b border-[#333336] bg-[#1d1d1f] px-4 lg:px-6">
+      {/* COMPACT TOP NAVIGATION - Pure White */}
+      <nav className="flex h-14 shrink-0 items-center justify-between border-b border-black/5 bg-white px-4 lg:px-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <Activity className="h-5 w-5 text-[#f5f5f7]" />
-          <span className="text-sm font-semibold tracking-wide text-[#f5f5f7]">PulseETL</span>
+          <Activity className="h-5 w-5 text-[#1d1d1f]" />
+          <span className="text-sm font-semibold tracking-wide text-[#1d1d1f]">PulseETL</span>
         </div>
         <div className="flex items-center gap-4">
           {bannerMsg && (
-            <span className={`text-xs font-medium tracking-wide ${bannerMsg.type === "ok" ? "text-[#32d74b]" : "text-[#ff453a]"}`}>
+            <span className={`text-xs font-medium tracking-wide ${bannerMsg.type === "ok" ? "text-[#34c759]" : "text-[#ff3b30]"}`}>
               {bannerMsg.text}
             </span>
           )}
           <button
             onClick={loadAllData}
             disabled={isLoading}
-            className="flex items-center gap-1.5 text-xs font-medium text-[#86868b] transition-colors hover:text-[#f5f5f7] disabled:opacity-50"
+            className="flex items-center gap-1.5 text-xs font-medium text-[#8e8e93] transition-colors hover:text-[#1d1d1f] disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
             Refresh
@@ -141,7 +142,7 @@ export default function TelemetryDashboardPage() {
           <button
             onClick={handleRunPipeline}
             disabled={isTriggering}
-            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#f5f5f7] px-4 py-1.5 text-xs font-semibold text-black transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#1d1d1f] px-4 py-1.5 text-xs font-semibold text-white transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50 shadow-md"
           >
             {isTriggering ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
             {isTriggering ? "Running..." : "Run Pipeline"}
@@ -153,78 +154,80 @@ export default function TelemetryDashboardPage() {
       <main className="flex-1 overflow-y-auto p-3 lg:overflow-hidden">
         <div className="flex flex-col gap-3 lg:grid lg:h-full lg:w-full lg:grid-cols-4 lg:grid-rows-[100px_1fr_220px]">
           
-          {/* ROW 1: 4x KPI Cards */}
-          <div className="flex flex-col justify-center rounded-[1.5rem] bg-[#1d1d1f] p-5 lg:col-span-1">
+          {/* ROW 1: 4x KPI Cards - Pure White with subtle shadow */}
+          <div className="flex flex-col justify-center rounded-[1.5rem] border border-black/5 bg-white p-5 shadow-sm lg:col-span-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-semibold tracking-tighter text-[#f5f5f7]">
+                <p className="text-3xl font-semibold tracking-tighter text-[#1d1d1f]">
                   {overview ? overview.total_rows.toLocaleString() : "—"}
                 </p>
-                <p className="mt-1 text-xs font-medium text-[#86868b]">Fact Rows</p>
+                <p className="mt-1 text-xs font-medium text-[#8e8e93]">Fact Rows</p>
               </div>
-              <Database className="h-7 w-7 text-[#333336]" />
+              <Database className="h-7 w-7 text-[#f2f2f7]" />
             </div>
           </div>
 
-          <div className="flex flex-col justify-center rounded-[1.5rem] bg-[#1d1d1f] p-5 lg:col-span-1">
+          <div className="flex flex-col justify-center rounded-[1.5rem] border border-black/5 bg-white p-5 shadow-sm lg:col-span-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-semibold tracking-tighter text-[#f5f5f7]">
+                <p className="text-3xl font-semibold tracking-tighter text-[#1d1d1f]">
                   {overview ? overview.critical_anomalies + overview.warning_anomalies : "—"}
                 </p>
-                <p className="mt-1 text-xs font-medium text-[#86868b]">7-Day Anomalies</p>
+                <p className="mt-1 text-xs font-medium text-[#8e8e93]">7-Day Anomalies</p>
               </div>
-              <AlertCircle className="h-7 w-7 text-[#333336]" />
+              <AlertCircle className="h-7 w-7 text-[#f2f2f7]" />
             </div>
           </div>
 
-          <div className="flex flex-col justify-center rounded-[1.5rem] bg-[#1d1d1f] p-5 lg:col-span-1">
+          <div className="flex flex-col justify-center rounded-[1.5rem] border border-black/5 bg-white p-5 shadow-sm lg:col-span-1">
             <div className="flex items-center justify-between overflow-hidden">
               <div className="truncate pr-4">
-                <p className="truncate text-xl font-semibold tracking-tight text-[#f5f5f7]">
+                <p className="truncate text-xl font-semibold tracking-tight text-[#1d1d1f]">
                   {overview?.latest_run?.status || "—"}
                 </p>
-                <p className="mt-1 text-xs font-medium text-[#86868b]">Last Status</p>
+                <p className="mt-1 text-xs font-medium text-[#8e8e93]">Last Status</p>
               </div>
-              <CheckCircle2 className="h-7 w-7 shrink-0 text-[#333336]" />
+              <CheckCircle2 className="h-7 w-7 shrink-0 text-[#f2f2f7]" />
             </div>
           </div>
 
-          <div className="flex flex-col justify-center rounded-[1.5rem] bg-[#1d1d1f] p-5 lg:col-span-1">
+          <div className="flex flex-col justify-center rounded-[1.5rem] border border-black/5 bg-white p-5 shadow-sm lg:col-span-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-semibold tracking-tighter text-[#f5f5f7]">
+                <p className="text-3xl font-semibold tracking-tighter text-[#1d1d1f]">
                   {overview?.latest_run ? `${(overview.latest_run.duration_ms / 1000).toFixed(2)}s` : "—"}
                 </p>
-                <p className="mt-1 text-xs font-medium text-[#86868b]">Latency</p>
+                <p className="mt-1 text-xs font-medium text-[#8e8e93]">Latency</p>
               </div>
-              <Server className="h-7 w-7 text-[#333336]" />
+              <Server className="h-7 w-7 text-[#f2f2f7]" />
             </div>
           </div>
 
           {/* ROW 2: Main Chart (Span 3) + Anomalies (Span 1) */}
-          <div className="flex min-h-[350px] flex-col rounded-[1.5rem] bg-[#1d1d1f] p-5 lg:col-span-3 lg:min-h-0">
+          <div className="flex min-h-[350px] flex-col rounded-[1.5rem] border border-black/5 bg-white p-5 shadow-sm lg:col-span-3 lg:min-h-0">
             <div className="mb-4 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-              <div className="inline-flex rounded-full bg-[#000000] p-1">
+              
+              {/* Segmented Controls (Light Mode) */}
+              <div className="inline-flex rounded-full bg-[#e5e5ea] p-1">
                 {CITIES.map((city) => (
                   <button
                     key={city}
                     onClick={() => setSelectedCity(city)}
                     className={`rounded-full px-4 py-1 text-xs font-medium transition-all ${
-                      selectedCity === city ? "bg-[#333336] text-white" : "text-[#86868b] hover:text-white"
+                      selectedCity === city ? "bg-white text-[#1d1d1f] shadow-sm" : "text-[#8e8e93] hover:text-[#1d1d1f]"
                     }`}
                   >
                     {city}
                   </button>
                 ))}
               </div>
-              <div className="inline-flex rounded-full bg-[#000000] p-1">
+              <div className="inline-flex rounded-full bg-[#e5e5ea] p-1">
                 {METRICS.map((m) => (
                   <button
                     key={m.id}
                     onClick={() => setSelectedMetric(m.id)}
                     className={`rounded-full px-4 py-1 text-xs font-medium transition-all ${
-                      selectedMetric === m.id ? "bg-[#333336] text-white" : "text-[#86868b] hover:text-white"
+                      selectedMetric === m.id ? "bg-white text-[#1d1d1f] shadow-sm" : "text-[#8e8e93] hover:text-[#1d1d1f]"
                     }`}
                   >
                     {m.label.split(" ")[0]}
@@ -237,12 +240,12 @@ export default function TelemetryDashboardPage() {
               {timeseries && (
                 <div className="absolute right-0 top-0 z-10 flex gap-4 text-right">
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">Mean</p>
-                    <p className="text-lg font-semibold tracking-tight text-[#f5f5f7]">{timeseries.rolling_mean}</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8e8e93]">Mean</p>
+                    <p className="text-lg font-semibold tracking-tight text-[#1d1d1f]">{timeseries.rolling_mean}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#86868b]">Threshold</p>
-                    <p className="text-lg font-semibold tracking-tight text-[#ff9f0a]">{timeseries.upper_threshold}</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#8e8e93]">Threshold</p>
+                    <p className="text-lg font-semibold tracking-tight text-[#ff9500]">{timeseries.upper_threshold}</p>
                   </div>
                 </div>
               )}
@@ -251,55 +254,55 @@ export default function TelemetryDashboardPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                     <defs>
-                      <linearGradient id="appleGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={activeMetricMeta.color} stopOpacity={0.3} />
+                      <linearGradient id="appleGradientLight" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={activeMetricMeta.color} stopOpacity={0.2} />
                         <stop offset="100%" stopColor={activeMetricMeta.color} stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="4 4" stroke="#333336" vertical={false} />
-                    <XAxis dataKey="timeLabel" tick={{ fill: "#86868b", fontSize: 11 }} tickLine={false} axisLine={false} minTickGap={40} dy={10} />
-                    <YAxis tick={{ fill: "#86868b", fontSize: 11 }} tickLine={false} axisLine={false} dx={-15} />
+                    <CartesianGrid strokeDasharray="4 4" stroke="#e5e5ea" vertical={false} />
+                    <XAxis dataKey="timeLabel" tick={{ fill: "#8e8e93", fontSize: 11 }} tickLine={false} axisLine={false} minTickGap={40} dy={10} />
+                    <YAxis tick={{ fill: "#8e8e93", fontSize: 11 }} tickLine={false} axisLine={false} dx={-15} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "rgba(29, 29, 31, 0.9)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,0.1)", borderRadius: "12px", fontSize: "12px", color: "#f5f5f7", boxShadow: "0 10px 20px -5px rgba(0,0,0,0.5)" }}
-                      itemStyle={{ color: activeMetricMeta.color }}
+                      contentStyle={{ backgroundColor: "rgba(255, 255, 255, 0.9)", backdropFilter: "blur(10px)", borderColor: "rgba(0,0,0,0.05)", borderRadius: "12px", fontSize: "12px", color: "#1d1d1f", boxShadow: "0 10px 20px -5px rgba(0,0,0,0.1)" }}
+                      itemStyle={{ color: activeMetricMeta.color, fontWeight: "600" }}
                     />
                     {timeseries && (
                       <>
-                        <ReferenceLine y={timeseries.rolling_mean} stroke="#86868b" strokeDasharray="3 3" />
-                        <ReferenceLine y={timeseries.upper_threshold} stroke="#ff9f0a" strokeDasharray="3 3" />
+                        <ReferenceLine y={timeseries.rolling_mean} stroke="#8e8e93" strokeDasharray="3 3" />
+                        <ReferenceLine y={timeseries.upper_threshold} stroke="#ff9500" strokeDasharray="3 3" />
                       </>
                     )}
-                    <Area type="monotone" dataKey="value" stroke={activeMetricMeta.color} strokeWidth={2} fill="url(#appleGradient)" activeDot={{ r: 5, fill: "#000", stroke: activeMetricMeta.color, strokeWidth: 2 }} />
+                    <Area type="monotone" dataKey="value" stroke={activeMetricMeta.color} strokeWidth={2} fill="url(#appleGradientLight)" activeDot={{ r: 5, fill: "#fff", stroke: activeMetricMeta.color, strokeWidth: 2 }} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             </div>
           </div>
 
-          <div className="flex min-h-[350px] flex-col rounded-[1.5rem] bg-[#1d1d1f] p-5 lg:col-span-1 lg:min-h-0">
+          <div className="flex min-h-[350px] flex-col rounded-[1.5rem] border border-black/5 bg-white p-5 shadow-sm lg:col-span-1 lg:min-h-0">
             <div className="mb-4 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-[#86868b]" />
-              <h3 className="text-sm font-semibold tracking-tight text-[#f5f5f7]">Anomaly Log</h3>
+              <TrendingUp className="h-4 w-4 text-[#8e8e93]" />
+              <h3 className="text-sm font-semibold tracking-tight text-[#1d1d1f]">Anomaly Log</h3>
             </div>
             <div className="custom-scrollbar flex-1 overflow-y-auto pr-2">
               {anomalies.length === 0 ? (
-                <div className="flex h-full items-center justify-center text-[#86868b]">
+                <div className="flex h-full items-center justify-center text-[#8e8e93]">
                   <p className="text-xs font-medium">No alerts today.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {anomalies.map((a) => (
-                    <div key={a.id} className="border-b border-[#333336] pb-3 last:border-0">
+                    <div key={a.id} className="border-b border-black/5 pb-3 last:border-0">
                       <div className="mb-1 flex items-start justify-between">
-                        <span className="text-xs font-semibold text-[#f5f5f7]">{a.entity_id}</span>
-                        <span className={`text-[11px] font-bold ${a.severity === "CRITICAL" ? "text-[#ff453a]" : "text-[#ff9f0a]"}`}>
+                        <span className="text-xs font-semibold text-[#1d1d1f]">{a.entity_id}</span>
+                        <span className={`text-[11px] font-bold ${a.severity === "CRITICAL" ? "text-[#ff3b30]" : "text-[#ff9500]"}`}>
                           Z {a.z_score > 0 ? `+${a.z_score}` : a.z_score}
                         </span>
                       </div>
                       <div className="flex items-end justify-between">
                         <div>
-                          <p className="text-[10px] text-[#86868b]">{a.metric_name}</p>
-                          <p className="mt-0.5 text-xs font-medium text-[#f5f5f7]">{a.observed_value} <span className="font-normal text-[#86868b]">(μ: {a.rolling_mean})</span></p>
+                          <p className="text-[10px] text-[#8e8e93]">{a.metric_name}</p>
+                          <p className="mt-0.5 text-xs font-medium text-[#1d1d1f]">{a.observed_value} <span className="font-normal text-[#8e8e93]">(μ: {a.rolling_mean})</span></p>
                         </div>
                       </div>
                     </div>
@@ -310,31 +313,31 @@ export default function TelemetryDashboardPage() {
           </div>
 
           {/* ROW 3: Audit Log (Span 4) */}
-          <div className="flex min-h-[220px] flex-col rounded-[1.5rem] bg-[#1d1d1f] p-5 lg:col-span-4 lg:min-h-0">
-            <h3 className="mb-3 text-sm font-semibold tracking-tight text-[#f5f5f7]">Execution History</h3>
+          <div className="flex min-h-[220px] flex-col rounded-[1.5rem] border border-black/5 bg-white p-5 shadow-sm lg:col-span-4 lg:min-h-0">
+            <h3 className="mb-3 text-sm font-semibold tracking-tight text-[#1d1d1f]">Execution History</h3>
             <div className="custom-scrollbar flex-1 overflow-x-auto overflow-y-auto pr-2">
               <table className="w-full whitespace-nowrap text-left text-xs">
-                <thead className="sticky top-0 bg-[#1d1d1f]">
+                <thead className="sticky top-0 bg-white shadow-[0_1px_0_rgba(0,0,0,0.05)]">
                   <tr>
-                    <th className="border-b border-[#333336] pb-2 font-medium text-[#86868b]">Trigger Source</th>
-                    <th className="border-b border-[#333336] pb-2 font-medium text-[#86868b]">Status</th>
-                    <th className="border-b border-[#333336] pb-2 font-medium text-[#86868b]">Rows Ingested</th>
-                    <th className="border-b border-[#333336] pb-2 font-medium text-[#86868b]">Latency</th>
-                    <th className="border-b border-[#333336] pb-2 font-medium text-[#86868b]">Timestamp</th>
+                    <th className="pb-2 font-medium text-[#8e8e93]">Trigger Source</th>
+                    <th className="pb-2 font-medium text-[#8e8e93]">Status</th>
+                    <th className="pb-2 font-medium text-[#8e8e93]">Rows Ingested</th>
+                    <th className="pb-2 font-medium text-[#8e8e93]">Latency</th>
+                    <th className="pb-2 font-medium text-[#8e8e93]">Timestamp</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#333336]">
+                <tbody className="divide-y divide-black/5">
                   {runs.map((r) => (
                     <tr key={r.run_id}>
-                      <td className="py-3 font-medium text-[#f5f5f7]">{r.trigger_source}</td>
+                      <td className="py-3 font-medium text-[#1d1d1f]">{r.trigger_source}</td>
                       <td className="py-3">
-                        <span className={r.status === "SUCCESS" ? "text-[#32d74b]" : r.status === "PARTIAL_WARNING" ? "text-[#ff9f0a]" : "text-[#ff453a]"}>
+                        <span className={r.status === "SUCCESS" ? "text-[#34c759]" : r.status === "PARTIAL_WARNING" ? "text-[#ff9500]" : "text-[#ff3b30]"}>
                           {r.status}
                         </span>
                       </td>
-                      <td className="py-3 text-[#f5f5f7]">{r.rows_ingested}</td>
-                      <td className="py-3 text-[#86868b]">{r.duration_ms}ms</td>
-                      <td className="py-3 text-[#86868b]">
+                      <td className="py-3 text-[#1d1d1f]">{r.rows_ingested}</td>
+                      <td className="py-3 text-[#8e8e93]">{r.duration_ms}ms</td>
+                      <td className="py-3 text-[#8e8e93]">
                         {new Date(r.executed_at).toLocaleString([], { month: "short", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
                       </td>
                     </tr>
@@ -348,10 +351,10 @@ export default function TelemetryDashboardPage() {
       </main>
 
       <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333336; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #636366; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d1d6; border-radius: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #c7c7cc; }
       `}} />
     </div>
   );
